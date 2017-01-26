@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
+<html>
+  <head>
+    <title>06-老虎机.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+    <style>
+    	.on{
+    		background-color: cyan;
+    		border:solid 1px red;
+    		width:28px;
+    		height:30px;
+    		float:left;
+    	}
+    	.after{
+    		background-color:purple;
+    		border:solid 1px pink;
+    		width:28px;
+    		height:30px;
+    		float:left;
+    	}
+    </style>
+	<script type="text/javascript">
+		//定义长度和宽度
+		var length=12;
+		var width=18;
+		window.onload=function(){
+			var bodyObj = document.getElementsByTagName("body");
+			//alert(bodyObj);
+			bodyObj[0].innerHTML += "<div id='out' style='margin: 0 auto; width:"+30*width+"px' ></div>";
+			//获取out div对象
+			var outDivObj = document.getElementById("out");
+			for(var i =0;i<size;i++){
+				outDivObj.innerHTML += "<div class='after' id ='div"+(i+1)+"'></div>";
+			}
+		}
+		//alert(getId(4));
+		//alert(flag);
+		//div的个数
+		var size = length*width;
+		//创建数组
+		var arr = new Array();
+		for( var i =0;i<length;i++){
+			arr[i]=new Array();
+			for(var j = 0; j<width;j++){
+				arr[i][j]=i*width+j+1;
+			}
+		}
+		//根据传入的flag获取下一个id的函数
+		 function getId(target) {
+			var count=0;
+			
+			var imin = 0;
+			var imax = length-1;
+			var jmin = 0;
+			var jmax = width-1;
+			
+			while(imin<=imax&& jmin<= jmax) {
+				for(var j = jmin;j<=jmax;j++) {
+					count++;
+					if(count==target) {
+						return arr[imin][j];
+					}
+				}
+				imin++;
+				for (var i=imin;i<=imax;i++) {
+					count++;
+					if(count==target) {
+						return arr[i][jmax];
+					}
+				}
+				jmax--;
+				
+				if(imin>imax || jmax<jmin) {
+					break;
+				}
+				
+				for(var j=jmax;j>=jmin;j--) {
+					count++;
+					if(count==target) {
+						return arr[imax][j];
+					}
+				}
+				imax--;
+				for(var i =imax;i>=imin;i--) {
+					count++;
+					if(count==target) {
+						return arr[i][jmin];
+					}
+				}
+				jmin++;
+			}
+			return -1;
+		}
+		var flag = 1;
+		var end =0;
+		function _preview(){
+			//把之前的方格颜色重置
+			_reset();
+			var id = getId(flag);
+			flag++;
+			if(id==-1){
+				//如果遍历一圈则从头开始
+				flag=1;
+			}else{
+				//得到div对象
+				var divObj = document.getElementById("div"+id);
+				//alert(divObj);
+				divObj.className="on";
+			}
+		}
+		//延时消失
+		var delay = 1;
+		function _reset(){
+			var oldFlag = flag-delay;
+			//如果为零 要把遍历末端的方块颜色重置
+			for(var i = -delay+1;i<=0;i++){
+				if(oldFlag==i){
+					oldFlag=size-i-delay+1;
+				}
+			}
+			var oldId = getId(oldFlag);
+			//得到div对象
+			var oldDivObj = document.getElementById("div"+oldId);
+			//alert(divObj);
+			oldDivObj.className="after";
+		}
+		function _continue(){
+			clearTimeout(end);
+			end = setInterval("_preview()", 100);
+		}
+		function _start(){
+			clearTimeout(end);
+			for(var i = 0;i<delay;i++){
+				_reset();
+				flag++;
+			}
+			flag=1;
+			end = setInterval("_preview()", 1);
+		}
+		function _stop(){
+			clearTimeout(end);
+			for(var i = 0;i<delay-1;i++){
+				_reset();
+				flag++;
+			}
+			flag-=(delay-1);
+		}
+	</script>
+  </head>
+  
+  <body>
+  	<button onclick = "_start();">start</button>
+  	<button onclick = "_stop();">stop</button>
+  	<button onclick = "_continue();" onkeypress="_stop();" >continue</button>
+  </body>
+</html>
